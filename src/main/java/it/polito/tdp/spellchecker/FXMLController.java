@@ -36,24 +36,36 @@ Dizionario model;
 
     @FXML
     void handleCheck(ActionEvent event) {
-    	 
+    	
+    	long start = System.nanoTime();
+    	
     	String lingua = cmbLanguage.getValue();
     	model.loadDictionary(lingua);
     	
     	String input = txtInput.getText();
     	input = input.replaceAll("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()\\[\\]\"]", "");
-    	LinkedList<RichWord> resultSet = (LinkedList<RichWord>) model.spellCheck(input);
+    	//LinkedList<RichWord> resultSet = (LinkedList<RichWord>) model.spellCheck(input);
+    	LinkedList<RichWord> resultSet = (LinkedList<RichWord>) model.spellCheclDicotomic(input);
     	
     	String result = "";
     	for(RichWord r : resultSet) {
-    		if(r.correct == true) 
-    			result += r.word+": correct\n"; 
-    		else result += r.word+": incorrect\n";
+    		if(r.isCorrect() == true) 
+    			result += r.getWord()+": correct\n"; 
+    		else result += r.getWord()+": incorrect\n";
     	}
   
     	txtResult.setText(result);
-    	txtCount.setText("NUMERO ERRORI: "+resultSet.size());
+    	int err = 0;
+    	for(RichWord r : resultSet) {
+    		if(r.isCorrect() == false)
+    			err ++;
+    	}
+    	txtCount.setText("NUMERO ERRORI: "+err);
     	
+    	long end = System.nanoTime();
+    	long time = end-start;
+    	
+    	txtTime.setText("TIME: "+time);	
     	
     }
 
@@ -64,6 +76,8 @@ Dizionario model;
     	txtTime.setText("TIME");
     	txtCount.setText("NO ERRORS YET");
     	cmbLanguage.getItems().clear();
+    	cmbLanguage.getItems().add("Italian");
+        cmbLanguage.getItems().add("English");
     }
 
 
